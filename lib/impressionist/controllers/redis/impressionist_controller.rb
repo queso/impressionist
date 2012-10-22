@@ -3,20 +3,23 @@ ImpressionistController::InstanceMethods.send(:define_method, :impressionist) do
     if obj.respond_to?("impressionable?")
       if unique_instance?(obj, opts[:unique])
         context = redis_context(obj)
-        i = Impression.create(Remodel.create_context(context),
-                              :impressionable_type => obj.class.to_s,
-                              :impressionable_id => obj.id,
-                              :message => message[:message],
-                              :controller_name => controller_name,
-                              :action_name => action_name,
-                              :user_id => user_id,
-                              :request_hash => @impressionist_hash,
-                              :session_hash => session_hash,
-                              :ip_address => request.remote_ip,
-                              :referrer => request.referer,
-                              :created_at => Time.now)
-        obj.impression_ids.add(i.id, Time.now.to_i)
-        broadcast "/notifications/user_stream", "{\"id\": \"#{i.id}\", \"context\": \"#{context}\"}"
+        if !context.nil?
+            i = Impression.create(Remodel.create_context(context),
+                                  :impressionable_type => obj.class.to_s,
+                                  :impressionable_id => obj.id,
+                                  :message => message[:message],
+                                  :controller_name => controller_name,
+                                  :action_name => action_name,
+                                  :user_id => user_id,
+                                  :request_hash => @impressionist_hash,
+                                  :session_hash => session_hash,
+                                  :ip_address => request.remote_ip,
+                                  :referrer => request.referer,
+                                  :created_at => Time.now)
+            obj.impression_ids.add(i.id, Time.now.to_i)
+
+            broadcast "/notifications/user_stream", "{\"id\": \"#{i.id}\", \"context\": \"#{context}\"}"
+        end
       end
     else
       # we could create an impression anyway. for classes, too. why not?
