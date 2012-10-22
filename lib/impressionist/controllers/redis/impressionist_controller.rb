@@ -2,8 +2,9 @@ ImpressionistController::InstanceMethods.send(:define_method, :impressionist) do
   unless bypass
     if obj.respond_to?("impressionable?")
       if unique_instance?(obj, opts[:unique])
-        context = redis_context(obj)
-        if !context.nil?
+        contexts = redis_contexts(obj)
+
+        contexts.each do |context|
             i = Impression.create(Remodel.create_context(context),
                                   :impressionable_type => obj.class.to_s,
                                   :impressionable_id => obj.id,
@@ -20,6 +21,7 @@ ImpressionistController::InstanceMethods.send(:define_method, :impressionist) do
 
             broadcast "/notifications/user_stream", "{\"id\": \"#{i.id}\", \"context\": \"#{context}\"}"
         end
+
       end
     else
       # we could create an impression anyway. for classes, too. why not?
@@ -34,26 +36,27 @@ def broadcast(channel, message)
   Net::HTTP.post_form(uri, :message => message.to_json)
 end
 
-def redis_context (obj)
+def redis_contexts (obj)
+  contexts = []
+
   case obj.class.to_s
     when 'Share' then
       if obj.contact_id.present?
         contact = Contact.find(obj.contact_id)
         user = User.find_by_email(contact.email)
         if !user.nil?
-          context = "impression_user_#{user.id}"
+          contexts << "impression_user_#{user.id}"
         end
       elsif obj.group_id.present?
-        context = "impression_group_#{obj.group_id}"
+        contexts << "impression_group_#{obj.group_id}"
       elsif obj.organization_id.present?
-        context = "impression_org_#{obj.organization_id}"
+        contexts << "impression_org_#{obj.organization_id}"
       end
-    #when 'Message' then
-        #"impression_user_#{obj.receiver_id}"
-    #when 'Term' then
-        #"impression_user_#{obj.id}"
-    #when 'Contact' then
-        #'5'
+    when 'Star' then
+      contexts << "impression_user_#{obj.starable.user_id}"
+    when 'Video' then
+      contexts << "impression_channel_#{obj.channel_id}"
     end
-  context
+
+  contexts
 end
