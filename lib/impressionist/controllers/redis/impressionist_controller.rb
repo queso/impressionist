@@ -53,7 +53,7 @@ def redis_contexts (obj)
         contexts << "impression_org_#{obj.organization_id}"
       end
     when 'Star' then
-      contexts << "impression_user_#{obj.starable.user_id}"
+      contexts << "impression_user_#{obj.starable.channel_id}"
     when 'Video' then
       contexts << "impression_channel_#{obj.channel_id}"
     end
