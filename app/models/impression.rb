@@ -1,3 +1,3 @@
 class Impression
-  belongs_to :impressionable, :polymorphic=>true
+  #belongs_to :impressionable, :polymorphic=>true
 end
