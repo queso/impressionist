@@ -56,6 +56,8 @@ def redis_contexts (obj)
       contexts << "impression_channel_#{obj.starable.channel_id}"
     when 'Video' then
       contexts << "impression_channel_#{obj.channel_id}"
+    when 'User' then
+      contexts << "impression_user_#{obj.invited_by_id}"
     end
 
   contexts
