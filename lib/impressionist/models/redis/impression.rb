@@ -13,5 +13,10 @@ class Impression < Remodel::Entity
   property :session_hash, :class => 'String'
   property :message, :class => 'String'
   property :referrer, :class => 'String'
+  property :to_contact_id, :class => 'Integer'
+  property :to_group_id, :class => 'Integer'
+  property :to_organization_id, :class => 'Integer'
+  property :shareable_id, :class => 'Integer'
+  property :shareable_type, :class => 'String'
   property :created_at, :class => 'Time'
 end
