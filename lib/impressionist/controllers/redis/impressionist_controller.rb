@@ -46,9 +46,9 @@ def broadcast_notification (obj, impression)
         contact = IndividualContact.find(obj.individual_contact_id)
         if contact.contact_user_id.present?
           add_user_notification(contact.contact_user_id, impression.id)
-          broadcast "/notifications/user_stream/#{contact.contact_user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
+          broadcast "/#{params["submodule"]}/notifications/user_stream/#{contact.contact_user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
           add_user_notification(impression.user_id, impression.id)
-          broadcast "/notifications/user_stream/#{impression.user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
+          broadcast "/#{params["submodule"]}/notifications/user_stream/#{impression.user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
         end
       end
 
@@ -56,35 +56,35 @@ def broadcast_notification (obj, impression)
         group_users_ids = Remodel.redis.lrange "contact_group:#{obj.contact_group_id}:user_ids", 0, -1
         group_users_ids.each do |group_user_id|
           add_user_notification(group_user_id, impression.id)
-          broadcast "/notifications/user_stream/#{group_user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
+          broadcast "/#{params["submodule"]}/notifications/user_stream/#{group_user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
         end
         add_user_notification(impression.user_id, impression.id)
-        broadcast "/notifications/user_stream/#{impression.user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
+        broadcast "/#{params["submodule"]}/notifications/user_stream/#{impression.user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
       end
 
       if obj.contact_organization_id.present?
         org_users_ids = Remodel.redis.lrange "contact_organization:#{obj.contact_organization_id}:user_ids", 0, -1
         org_users_ids.each do |org_user_id|
           add_user_notification(org_user_id, impression.id)
-          broadcast "/notifications/user_stream/#{org_user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
+          broadcast "/#{params["submodule"]}/notifications/user_stream/#{org_user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
         end
         add_user_notification(impression.user_id, impression.id)
-        broadcast "/notifications/user_stream/#{impression.user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
+        broadcast "/#{params["submodule"]}/notifications/user_stream/#{impression.user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
       end
     when 'Star' then
       content_owner_users_ids = Remodel.redis.lrange "content_owner:#{obj.starable.content_owner_id}:user_ids", 0, -1
       content_owner_users_ids.each do |content_owner_user_id|
         add_user_notification(content_owner_user_id, impression.id)
-        broadcast "/notifications/user_stream/#{content_owner_user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
+        broadcast "/#{params["submodule"]}/notifications/user_stream/#{content_owner_user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
       end
     when 'Video' then
       content_owner_users_ids = Remodel.redis.lrange "content_owner:#{obj.content_owner_id}:user_ids", 0, -1
       content_owner_users_ids.each do |content_owner_user_id|
         add_user_notification(content_owner_user_id, impression.id)
-        broadcast "/notifications/user_stream/#{content_owner_user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
+        broadcast "/#{params["submodule"]}/notifications/user_stream/#{content_owner_user_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
       end
     when 'User' then
       add_user_notification(obj.invited_by_id, impression.id)
-      broadcast "/notifications/user_stream/#{obj.invited_by_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
+      broadcast "/#{params["submodule"]}/notifications/user_stream/#{obj.invited_by_id}", "{\"impression_id\": \"#{impression.id}\", \"impressionable_id\": \"#{obj.id}\", \"impressionable_class\": \"#{obj.class.to_s}\"}"
   end
 end
