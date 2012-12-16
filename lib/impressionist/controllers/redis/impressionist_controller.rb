@@ -16,6 +16,7 @@ ImpressionistController::InstanceMethods.send(:define_method, :impressionist) do
                               :to_contact_id => opts[:contact_id],
                               :to_group_id => opts[:group_id],
                               :to_organization_id => opts[:organization_id],
+                              :starable_id => obj.class.to_s == 'Star' ? obj.starable_id : nil,
                               :shareable_id => obj.class.to_s == 'Share' ? obj.shareable_id : nil,
                               :shareable_type => obj.class.to_s == 'Share' ? obj.shareable_type : nil,
                               :created_at => Time.now)

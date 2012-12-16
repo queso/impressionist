@@ -17,6 +17,7 @@ class Impression < Remodel::Entity
   property :to_group_id, :class => 'Integer'
   property :to_organization_id, :class => 'Integer'
   property :shareable_id, :class => 'Integer'
+  property :starable_id, :class => 'Integer'
   property :shareable_type, :class => 'String'
   property :created_at, :class => 'Time'
 end
