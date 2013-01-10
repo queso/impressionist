@@ -95,8 +95,14 @@ module ImpressionistController
 
     #use both @current_user and current_user helper
     def user_id
-      user_id = @current_user ? @current_user.id : nil rescue nil
-      user_id = current_user ? current_user.id : nil rescue nil if user_id.blank?
+      if @current_resource_user.nil?
+        user_id = @current_user ? @current_user.id : nil rescue nil
+        user_id = current_user ? current_user.id : nil rescue nil if user_id.blank?
+      else
+        user_id = @current_resource_user ? @current_resource_user.id : nil rescue nil
+        user_id = @current_resource_user ? current_resource_user.id : nil rescue nil if user_id.blank?
+      end
+
       user_id
     end
   end
