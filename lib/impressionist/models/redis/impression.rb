@@ -19,5 +19,6 @@ class Impression < Remodel::Entity
   property :shareable_id, :class => 'Integer'
   property :starable_id, :class => 'Integer'
   property :shareable_type, :class => 'String'
+  property :owner_module, :class => 'String'
   property :created_at, :class => 'Time'
 end

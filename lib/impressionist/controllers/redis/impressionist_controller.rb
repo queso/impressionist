@@ -19,6 +19,7 @@ ImpressionistController::InstanceMethods.send(:define_method, :impressionist) do
                               :starable_id => obj.class.to_s == 'Star' ? obj.starable_id : nil,
                               :shareable_id => obj.class.to_s == 'Share' ? obj.shareable_id : nil,
                               :shareable_type => obj.class.to_s == 'Share' ? obj.shareable_type : nil,
+                              :owner_module => params[:owner_module].present? ? params[:owner_module] : 'nil',
                               :created_at => Time.now)
         obj.impression_ids.add(i.id, Time.now.to_i)
         broadcast_notification(obj, i)
