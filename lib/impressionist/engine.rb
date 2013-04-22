@@ -19,6 +19,7 @@ module Impressionist
         Mongoid::Document.send(:include, Impressionist::Impressionable)
       elsif Impressionist.orm == :redis
         require "impressionist/models/redis/impression.rb"
+        require "impressionist/models/redis/user_notification.rb"
         require "impressionist/models/redis/impressionist/impressionable.rb"
         ActiveRecord::Base.send(:include, Impressionist::Impressionable)
       end
