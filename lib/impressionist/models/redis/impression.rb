@@ -31,7 +31,7 @@ class Impression < Remodel::Entity
       when 'Video' then
         create_video_notifications (obj)
       when 'User' then
-        crate_user_notifications (obj)
+        create_user_notifications (obj)
     end
   end
 
