@@ -2,6 +2,13 @@ ImpressionistController::InstanceMethods.send(:define_method, :impressionist) do
   unless bypass
     if obj.respond_to?("impressionable?")
       if unique_instance?(obj, opts[:unique])
+        if defined?(obj.campaign_flag)
+          campaign_flag = obj.campaign_flag
+        elsif defined?(message[:campaign_flag])
+          campaign_flag = message[:campaign_flag]
+        else
+          campaign_flag = nil
+        end
         i = Impression.create($redis_context,
                               :impressionable_type => obj.class.to_s,
                               :impressionable_id => obj.id,
@@ -19,6 +26,7 @@ ImpressionistController::InstanceMethods.send(:define_method, :impressionist) do
                               :starable_id => obj.class.to_s == 'Star' ? obj.starable_id : nil,
                               :shareable_id => obj.class.to_s == 'Share' ? obj.shareable_id : nil,
                               :shareable_type => obj.class.to_s == 'Share' ? obj.shareable_type : nil,
+                              :campaign_flag => campaign_flag,
                               :owner_module => params[:owner_module].present? ? params[:owner_module] : 'nil',
                               :created_at => Time.now)
         obj.impression_ids.add(i.id, Time.now.to_i)

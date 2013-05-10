@@ -20,9 +20,11 @@ class Impression < Remodel::Entity
   property :starable_id, :class => 'Integer'
   property :shareable_type, :class => 'String'
   property :owner_module, :class => 'String'
+  property :campaign_flag, :class => 'String'
   property :created_at, :class => 'Time'
 
   def create_notifications(obj)
+
     case obj.class.to_s
       when 'Share' then
         create_share_notifications (obj)
