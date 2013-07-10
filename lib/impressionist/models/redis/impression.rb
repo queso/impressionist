@@ -20,6 +20,7 @@ class Impression < Remodel::Entity
   property :starable_id, :class => 'Integer'
   property :shareable_type, :class => 'String'
   property :owner_module, :class => 'String'
+  property :submodule, :class => 'String'
   property :campaign_flag, :class => 'String'
   property :created_at, :class => 'Time'
 

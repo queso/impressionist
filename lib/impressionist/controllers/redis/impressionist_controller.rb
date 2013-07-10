@@ -28,6 +28,7 @@ ImpressionistController::InstanceMethods.send(:define_method, :impressionist) do
                               :shareable_type => obj.class.to_s == 'Share' ? obj.shareable_type : nil,
                               :campaign_flag => campaign_flag,
                               :owner_module => params[:owner_module].present? ? params[:owner_module] : 'nil',
+                              :submodule => params[:submodule].present? ? params[:submodule] : 'nil',
                               :created_at => Time.now)
         obj.impression_ids.add(i.id, Time.now.to_i)
         i.create_notifications(obj)
