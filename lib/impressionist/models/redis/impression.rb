@@ -41,45 +41,47 @@ class Impression < Remodel::Entity
   private
   def create_share_notifications (obj)
     # check if sharing with individual contact
-    if obj.individual_contact_id.present?
-      contact = IndividualContact.find(obj.individual_contact_id)
-      if contact.contact_user_id.present?
-        # create notification for the user receiveng the shared item
-        notification_index = add_to_user_notifications_list(contact.contact_user_id, self.id)
-        broadcast "/notifications/user_stream/#{contact.contact_user_id}", "{\"index\": \"#{notification_index}\"}"
+    if obj.contact_id.present?
+      if obj.share_contact_type == 'IndividualContact'
+        contact = Contact.find(obj.contact_id)
+        if contact.related_user_id.present?
+          # create notification for the user receiveng the shared item
+          notification_index = add_to_user_notifications_list(contact.related_user_id, self.id)
+          broadcast "/notifications/user_stream/#{contact.related_user_id}", "{\"index\": \"#{notification_index}\"}"
+
+          # create notification for the user sharing the item
+          notification_index = add_to_user_notifications_list(self.user_id, self.id)
+          broadcast "/notifications/user_stream/#{self.user_id}", "{\"index\": \"#{notification_index}\"}"
+        end
+      end
+
+      # check if sharing with contact group
+      if obj.share_contact_type == 'ContactGroup'
+        group_users_ids = Remodel.redis.lrange "contact_group:#{obj.contact_group_id}:user_ids", 0, -1
+        # create notification for each member of the group
+        group_users_ids.each do |group_user_id|
+          notification_index = add_to_user_notifications_list(group_user_id, self.id)
+          broadcast "/notifications/user_stream/#{group_user_id}", "{\"index\": \"#{notification_index}\"}"
+        end
 
         # create notification for the user sharing the item
         notification_index = add_to_user_notifications_list(self.user_id, self.id)
         broadcast "/notifications/user_stream/#{self.user_id}", "{\"index\": \"#{notification_index}\"}"
       end
-    end
 
-    # check if sharing with contact group
-    if obj.contact_group_id.present?
-      group_users_ids = Remodel.redis.lrange "contact_group:#{obj.contact_group_id}:user_ids", 0, -1
-      # create notification for each member of the group
-      group_users_ids.each do |group_user_id|
-        notification_index = add_to_user_notifications_list(group_user_id, self.id)
-        broadcast "/notifications/user_stream/#{group_user_id}", "{\"index\": \"#{notification_index}\"}"
+      # check if sharing with contact organization
+      if obj.share_contact_type == "ContactOrganization"
+        org_users_ids = Remodel.redis.lrange "contact_organization:#{obj.contact_organization_id}:user_ids", 0, -1
+        # create notification for each member of the organization
+        org_users_ids.each do |org_user_id|
+          notification_index = add_to_user_notifications_list(org_user_id, self.id)
+          broadcast "/notifications/user_stream/#{org_user_id}", "{\"index\": \"#{notification_index}\"}"
+        end
+
+        # create notification for the user sharing the item
+        notification_index = add_to_user_notifications_list(self.user_id, self.id)
+        broadcast "/notifications/user_stream/#{self.user_id}", "{\"index\": \"#{notification_index}\"}"
       end
-
-      # create notification for the user sharing the item
-      notification_index = add_to_user_notifications_list(self.user_id, self.id)
-      broadcast "/notifications/user_stream/#{self.user_id}", "{\"index\": \"#{notification_index}\"}"
-    end
-
-    # check if sharing with contact organization
-    if obj.contact_organization_id.present?
-      org_users_ids = Remodel.redis.lrange "contact_organization:#{obj.contact_organization_id}:user_ids", 0, -1
-      # create notification for each member of the organization
-      org_users_ids.each do |org_user_id|
-        notification_index = add_to_user_notifications_list(org_user_id, self.id)
-        broadcast "/notifications/user_stream/#{org_user_id}", "{\"index\": \"#{notification_index}\"}"
-      end
-
-      # create notification for the user sharing the item
-      notification_index = add_to_user_notifications_list(self.user_id, self.id)
-      broadcast "/notifications/user_stream/#{self.user_id}", "{\"index\": \"#{notification_index}\"}"
     end
   end
 
